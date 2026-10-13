@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Карта курса — Учебный центр «РОБОВИТА»</title>
+<link rel="stylesheet" href="assets/css/styles.css">
+<style>
+  .map-legend {
+    display: flex; flex-wrap: wrap; gap: 10px 18px; margin: 12px 0 4px; align-items: center;
+  }
+  .map-legend span {
+    display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .92rem;
+  }
+  .map-progress {
+    margin-top: 14px; background: #fff; border-radius: 14px; padding: 12px 16px;
+    border: 1px solid var(--line); font-weight: 700;
+  }
+  .map-progress .bar {
+    height: 10px; border-radius: 10px; background: #e2e8f0; overflow: hidden; margin-top: 8px;
+  }
+  .map-progress .fill {
+    height: 100%; width: 100%; background: linear-gradient(90deg, var(--primary), #a3e635);
+  }
+  .section-note {
+    font-size: .95rem; color: #475569; margin: 0 0 4px; line-height: 1.45;
+  }
+  .module-card.projects {
+    border: 3px solid var(--accent, #6e0091);
+    background: linear-gradient(180deg, #faf5ff, #fff);
+  }
+  .module-card.projects h2 { color: var(--accent-ink, #4a1a5a); }
+  .module-card.projects .mod-count {
+    background: var(--accent-light, #f0e6f5); color: var(--accent-ink, #4a1a5a);
+  }
+  .proj-meta {
+    display: block; font-size: .78rem; font-weight: 600; color: #64748b; margin-top: 2px;
+  }
+  .lrow .ttl-wrap { flex: 1; min-width: 0; }
+  .lrow .ttl { display: block; }
+  .lrow .desc {
+    display: block; margin-top: 4px; font-size: .9rem; font-weight: 600;
+    color: #64748b; line-height: 1.4;
+  }
+  .load-tag {
+    font-size: .72rem; font-weight: 800; padding: 2px 8px; border-radius: 99px;
+    background: #f1f5f9; color: #475569; margin-left: 6px; white-space: nowrap;
+  }
+  .load-tag.easy { background: #dcfce7; color: #166534; }
+  .load-tag.mid { background: #fef9c3; color: #854d0e; }
+  .load-tag.hard { background: #fee2e2; color: #991b1b; }
+  .path-strip {
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 0;
+    font-weight: 800; font-size: .9rem;
+  }
+  .path-strip span {
+    background: #fff; border: 2px solid var(--line); border-radius: 12px; padding: 6px 10px;
+  }
+  /* карта для наглядности — без переходов */
+  .lrow.locked {
+    cursor: default;
+    pointer-events: none;
+    opacity: .92;
+    user-select: none;
+  }
+  .lrow.locked:hover {
+    transform: none;
+    border-color: var(--line);
+    background: #F6FBF3;
+  }
+  .goal-box {
+    margin-top: 12px; padding: 12px 14px; border-radius: 12px;
+    background: #fff; border: 1px dashed #9CC97A; font-weight: 700; color: #334155; line-height: 1.45;
+  }
+</style>
+</head>
+<body class="course-map">
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="top-bar">
+      <div class="brand">
+        <img src="https://robovita.by/wp-content/uploads/elementor/thumbs/dlya-sajtalogo-qej515h43prl8ythj1imhr4q78480k3bz18uut9d6o.png" alt="Логотип РОБОВИТА" loading="lazy">
+        <div>
+          <div class="brand-name">РОБОВИТА</div>
+          <div class="brand-tag">учимся программировать роботов и игры</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero">
+      <div>
+        <div class="module-pill">Курс · Roblox Studio + Lua</div>
+        <h1>Карта курса</h1>
+        <p class="subtitle">От знакомства с Studio — к своим играм. Обзор траектории без открытия занятий</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="card" style="background:linear-gradient(135deg,var(--primary-light),#F2FCE9);border:none;">
+    <h2 style="color:var(--primary-dark);">👋 Как устроена программа</h2>
+    <p>
+      Курс идёт <b>спиралью</b>: сначала мир и руки в Studio, потом язык Lua маленькими шагами,
+      затем события и GUI, и только потом — <b>проектная деятельность</b> (целые игры).
+    </p>
+    <div class="path-strip">
+      <span>1. Старт</span> →
+      <span>2. Моделирование</span> →
+      <span>3. Скрипты</span> →
+      <span>4. Lua</span> →
+      <span>5. События</span> →
+      <span>6. GUI</span> →
+      <span>7. Механики</span> →
+      <span>📦 Проекты</span>
+    </div>
+    <div class="map-legend">
+      <span><span class="st soon" style="padding:4px 10px;border-radius:99px;">🔒 Закрыто</span> просмотр без ссылок</span>
+      <span><span class="load-tag easy">лёгкий</span> / <span class="load-tag mid">средний</span> / <span class="load-tag hard">сложный</span> — нагрузка проекта</span>
+    </div>
+    <div class="map-progress">
+      Учебных занятий в карте: <b>27</b> · Проекты: <b>11</b>
+      <div class="bar"><div class="fill"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 1 СТАРТ ===== -->
+  <div class="card module-card">
+    <h2>Раздел 1 · Старт <span class="mod-count">3 занятия</span></h2>
+    <p class="section-note">Низкая нагрузка. Цель — уверенно открыть Studio, мышь/клавиатура, базовые инструменты.</p>
+    <div class="lrows">
+      <div class="lrow locked">
+        <span class="code">1.1</span>
+        <span class="ttl-wrap"><span class="ttl">Знакомство с компьютером</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">1.2</span>
+        <span class="ttl-wrap"><span class="ttl">Первый урок в Roblox, мышь и клавиатура</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">1.3</span>
+        <span class="ttl-wrap"><span class="ttl">Инструменты моделирования</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 2 МОДЕЛИРОВАНИЕ ===== -->
+  <div class="card module-card">
+    <h2>Раздел 2 · Моделирование мира <span class="mod-count">4 занятия</span></h2>
+    <p class="section-note">Строим локации без тяжёлого кода. Закрепляем Part, Model, Toolbox, композицию сцены.</p>
+    <div class="lrows">
+      <div class="lrow locked">
+        <span class="code">2.1</span>
+        <span class="ttl-wrap"><span class="ttl">Строим дерево</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">2.2</span>
+        <span class="ttl-wrap"><span class="ttl">Строим карту деревни</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">2.3</span>
+        <span class="ttl-wrap"><span class="ttl">Собери робота</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">2.4</span>
+        <span class="ttl-wrap"><span class="ttl">Ландшафт и рельеф</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3 ПЕРВЫЕ СКРИПТЫ ===== -->
+  <div class="card module-card">
+    <h2>Раздел 3 · Первые скрипты <span class="mod-count">3 занятия</span></h2>
+    <p class="section-note">Мягкий вход в код: Script, свойства, переменные, простой цикл <code>for</code>.</p>
+    <div class="lrows">
+      <div class="lrow locked">
+        <span class="code">3.1</span>
+        <span class="ttl-wrap"><span class="ttl">Первый скрипт — оживляем объекты</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">3.2</span>
+        <span class="ttl-wrap"><span class="ttl">Переменные</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">3.3</span>
+        <span class="ttl-wrap"><span class="ttl">Цикл for — повторяем действия</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 4 ОСНОВЫ LUA ===== -->
+  <div class="card module-card">
+    <h2>Раздел 4 · Основы Lua <span class="mod-count">8 занятий</span></h2>
+    <p class="section-note">Язык по нарастающей: данные → операторы → ветвления → циклы → функции → игрок → обход списков.</p>
+    <div class="lrows">
+      <div class="lrow locked">
+        <span class="code">4.1</span>
+        <span class="ttl-wrap"><span class="ttl">Типы данных — текст, числа, цвет (фонтан)</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">4.5</span>
+        <span class="ttl-wrap"><span class="ttl">Операторы — собирай кристаллы</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">4.6</span>
+        <span class="ttl-wrap"><span class="ttl">Условия if / else — волшебные ворота</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">4.7</span>
+        <span class="ttl-wrap"><span class="ttl">Цикл while</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">4.8</span>
+        <span class="ttl-wrap"><span class="ttl">Функции</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">4.9</span>
+        <span class="ttl-wrap"><span class="ttl">Игроки — Player, Character, Humanoid</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">4.10</span>
+        <span class="ttl-wrap"><span class="ttl">Парные циклы — for i, v in pairs</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">4.11</span>
+        <span class="ttl-wrap"><span class="ttl">Таблицы и словари</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 5 СОБЫТИЯ ===== -->
+  <div class="card module-card">
+    <h2>Раздел 5 · События и иерархия объектов <span class="mod-count">3 занятия</span></h2>
+    <p class="section-note">Игра «реагирует»: клики, касания, дети объектов, безопасный поиск.</p>
+    <div class="lrows">
+      <div class="lrow locked">
+        <span class="code">5.1</span>
+        <span class="ttl-wrap"><span class="ttl">События — Ведьмина месть</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">5.3</span>
+        <span class="ttl-wrap"><span class="ttl">GetChildren — группы объектов</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">5.4</span>
+        <span class="ttl-wrap"><span class="ttl">FindFirstChild — дорога домой</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 6 GUI ===== -->
+  <div class="card module-card">
+    <h2>Раздел 6 · Интерфейс (GUI) <span class="mod-count">5 занятий</span></h2>
+    <p class="section-note">От кнопки на экране — к вывескам в мире и плавным меню.</p>
+    <div class="lrows">
+      <div class="lrow locked">
+        <span class="code">6.1</span>
+        <span class="ttl-wrap"><span class="ttl">GUI + TextButton — дверь с паролем</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">6.2</span>
+        <span class="ttl-wrap"><span class="ttl">TextBox, ImageLabel, ImageButton — пропуск героя</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">6.3</span>
+        <span class="ttl-wrap"><span class="ttl">SurfaceGui — неоновое кафе</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">6.4</span>
+        <span class="ttl-wrap"><span class="ttl">BillboardGui — остров квестов</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked">
+        <span class="code">6.5</span>
+        <span class="ttl-wrap"><span class="ttl">Tween GUI — выезжающий инвентарь</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 7 МЕХАНИКИ ===== -->
+  <div class="card module-card">
+    <h2>Раздел 7 · Игровая механика <span class="mod-count">1 занятие</span></h2>
+    <p class="section-note">Учебные темы-системы. Целые игры — в разделе проектов ниже.</p>
+    <div class="lrows">
+      <div class="lrow locked">
+        <span class="code">7.6</span>
+        <span class="ttl-wrap"><span class="ttl">Звук в игре (Sound) · светящееся пианино</span></span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ПРОЕКТНАЯ ДЕЯТЕЛЬНОСТЬ ===== -->
+  <div class="card module-card projects">
+    <h2>📦 Проектная деятельность <span class="mod-count">11 проектов</span></h2>
+    <p class="section-note">
+      Отдельный трек: ученик собирает <b>целую игру</b> (или крупный модуль).
+      Сначала навык на уроке → потом проект как применение.
+    </p>
+
+    <h3 style="margin:16px 0 6px;color:var(--accent-ink,#4a1a5a);font-size:1.15rem;">Входной уровень — после GUI</h3>
+    <div class="lrows">
+      <div class="lrow locked final-project">
+        <span class="code">П1</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Кликер <span class="load-tag easy">лёгкий</span></span>
+          <span class="proj-meta">Нужно: 6.1–6.2 · клик, счёт, RemoteEvent, ClickDetector</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked final-project">
+        <span class="code">П2</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Пианино <span class="load-tag easy">лёгкий</span></span>
+          <span class="proj-meta">Нужно: Sound + Touched · 7 клавиш, PointLight</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked final-project">
+        <span class="code">П3</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Доска для рисования <span class="load-tag mid">средний</span></span>
+          <span class="proj-meta">Нужно: циклы + GUI + RemoteEvent · пиксели, палитра, раунды</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+
+    <h3 style="margin:18px 0 6px;color:var(--accent-ink,#4a1a5a);font-size:1.15rem;">Мир и квесты — после событий</h3>
+    <div class="lrows">
+      <div class="lrow locked final-project">
+        <span class="code">П4</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Квесты · Загадки <span class="load-tag mid">средний</span></span>
+          <span class="proj-meta">Нужно: пин-код, IntValue, двери-пустышки, фонарик</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked final-project">
+        <span class="code">П5</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Лабиринт с ловушками <span class="load-tag mid">средний</span></span>
+          <span class="proj-meta">Нужно: Finish, таймер, Trap, Wall, телепорт</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked final-project">
+        <span class="code">П6</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Выживание в лесу <span class="load-tag mid">средний</span></span>
+          <span class="proj-meta">Нужно: 2.x + 4–6 · шкалы, Tent/Campfire, ModuleScript</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+
+    <h3 style="margin:18px 0 6px;color:var(--accent-ink,#4a1a5a);font-size:1.15rem;">Режимы и атмосфера</h3>
+    <div class="lrows">
+      <div class="lrow locked final-project">
+        <span class="code">П9</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Игра в кальмара — комната 1 <span class="load-tag hard">сложный</span></span>
+          <span class="proj-meta">Нужно: раунды, таймер, GUI, RemoteEvent, урон за движение</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked final-project">
+        <span class="code">П10</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Хоррор <span class="load-tag hard">сложный</span></span>
+          <span class="proj-meta">Нужно: Lighting/Fog, FP-вид, спринт, Killer, Flashlight</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+
+    <h3 style="margin:18px 0 6px;color:var(--accent-ink,#4a1a5a);font-size:1.15rem;">Крупные симуляторы и монетизация</h3>
+    <div class="lrows">
+      <div class="lrow locked final-project">
+        <span class="code">П11</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Симулятор Minecraft <span class="load-tag hard">сложный</span></span>
+          <span class="proj-meta">Нужно: Union, Tool, Touched, дроп, Terrain</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked final-project">
+        <span class="code">П12</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Взрыв солнца <span class="load-tag hard">сложный</span></span>
+          <span class="proj-meta">Нужно: SunToken, Lighting, Explosion, сбор 10/10</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+      <div class="lrow locked final-project">
+        <span class="code">П13</span>
+        <span class="ttl-wrap">
+          <span class="ttl">Магазин доната <span class="load-tag hard">сложный</span></span>
+          <span class="proj-meta">Нужно: GUI, Game Pass, MarketplaceService</span>
+        </span>
+        <span class="st soon">🔒 Закрыто</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-brand">
+      <img src="https://robovita.by/wp-content/uploads/elementor/thumbs/dlya-sajtalogo-qej515h43prl8ythj1imhr4q78480k3bz18uut9d6o.png" alt="Логотип РОБОВИТА">
+      Учебный центр «РОБОВИТА»
+    </div>
+    <div>Офлайн-курс по Roblox Studio и Lua · карта программы</div>
+  </div>
+</footer>
+</body>
+</html>

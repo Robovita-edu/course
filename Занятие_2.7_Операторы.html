@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2.7. Операторы — Собирай кристаллы! — Учебный центр «РОБОВИТА»</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    .code-block {
+      background: #2a2f3a; color: #e2e8f0; padding: 14px 18px; border-radius: 12px;
+      font-family: 'Courier New', monospace; font-size: 1rem; overflow-x: auto; margin: 12px 0; line-height: 1.55;
+    }
+    .code-block .comment { color: #94a3b8; }
+    .code-block .keyword { color: #f472b6; font-weight: 600; }
+    .code-block .string { color: #a3e635; }
+    .code-block .func { color: #60a5fa; }
+    .code-block .number { color: #fbbf24; }
+    .code-block .op { color: #fde047; font-weight: 700; }
+    .prop-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+    .prop-table th, .prop-table td { border: 1px solid var(--line,#e2e8f0); padding: 8px 12px; text-align: left; vertical-align: top; }
+    .prop-table th { background: var(--primary-light,#e8f5e0); color: var(--primary-dark,#1a4a0a); }
+    .prop-table td code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: .9rem; }
+    .theory-section { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--line,#e2e8f0); }
+    .theory-section:last-of-type { border-bottom: none; margin-bottom: 0; }
+    .theory-section h3 { margin-top: 0; color: var(--primary-dark,#1a4a0a); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .op-badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: .78rem; font-weight: 800; }
+    .op-badge.math { background: #fef3c7; color: #92400e; }
+    .op-badge.cmp { background: #dbeafe; color: #1e40af; }
+    .op-badge.logic { background: #fce7f3; color: #9d174d; }
+    .op-badge.str { background: #dcfce7; color: #166534; }
+    .scenario-box {
+      background: linear-gradient(135deg,#1a0a2e,#4c1d95); border-radius: 20px; padding: 16px 20px;
+      margin: 16px 0; display: flex; gap: 16px; align-items: center; color: #e2e8f0; border: 1px solid #a78bfa;
+    }
+    .scenario-avatar { font-size: 3rem; flex-shrink: 0; }
+    .scenario-box strong { color: #fbbf24; }
+    .info-callout {
+      background: #1e3a5f; color: #f1f5f9; border-radius: 16px; padding: 14px 18px; margin: 14px 0;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .info-callout .bulb { font-size: 1.5rem; }
+    .info-callout.purple { background: #3b1f4a; }
+    .info-callout.green { background: #14532d; }
+    .info-callout.amber { background: #78350f; }
+    .cheat-sheet {
+      background: #f8fafc; border-radius: 20px; padding: 20px 24px; border: 2px solid var(--primary,#61b01f);
+      margin: 24px 0; position: relative;
+    }
+    .cheat-sheet::before {
+      content: "📘 Шпаргалка по операторам"; position: absolute; top: -14px; left: 20px;
+      background: var(--primary-light,#e8f5e0); color: var(--primary-dark,#1a4a0a);
+      padding: 2px 16px; border-radius: 30px; font-weight: 700; font-size: .9rem; border: 1px solid var(--primary,#61b01f);
+    }
+    .cheat-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 12px; margin-top: 12px; }
+    .cheat-item { background: #fff; border-radius: 14px; padding: 12px 14px; border: 1px solid var(--line,#e2e8f0); }
+    .cheat-item .title { font-weight: 800; color: var(--primary-dark,#1a4a0a); margin-bottom: 4px; }
+    .cheat-item code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: .85rem; }
+    .cheat-item .rule { font-size: .9rem; margin: 4px 0; }
+    .map-card {
+      background: linear-gradient(135deg,#E8F5E0,#F4EAFA); border: 2px solid var(--primary,#61b01f);
+      border-radius: 20px; padding: 20px 24px; margin: 20px 0;
+    }
+    .map-card .dl {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; background: var(--primary,#61b01f);
+      color: #fff; padding: 12px 22px; border-radius: 30px; font-weight: 800; text-decoration: none;
+      box-shadow: 0 4px 0 #2E4A17;
+    }
+    .project-box {
+      background: linear-gradient(135deg,#fff,#F6FBF3); border: 3px solid var(--primary,#61b01f);
+      border-radius: 24px; padding: 24px 28px; margin: 28px 0;
+    }
+    .project-box > h2 { color: var(--primary-dark,#1a4a0a); margin-top: 0; }
+    .phase {
+      background: #fff; border: 2px solid var(--line,#e2e8f0); border-radius: 18px;
+      padding: 18px 20px; margin: 18px 0;
+    }
+    .phase h3 { margin: 0 0 8px; color: var(--primary-dark,#1a4a0a); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .phase-time { font-size: .85rem; background: var(--accent-light,#f0e6f5); color: var(--accent-ink,#4a1a5a); padding: 3px 12px; border-radius: 20px; font-weight: 700; }
+    .progress-track { background: #e2e8f0; height: 10px; border-radius: 10px; margin: 16px 0 8px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#7c3aed,#a3e635); transition: width .3s; }
+    .progress-label { font-size: .92rem; color: #334155; font-weight: 600; }
+    .task-steps { list-style: none; padding: 0; margin: 12px 0 0; }
+    .task-steps li { display: flex; align-items: baseline; gap: 8px; margin: 8px 0; line-height: 1.5; }
+    .task-steps li input[type="checkbox"] { transform: scale(1.2); flex-shrink: 0; margin-top: 3px; }
+    details.hint { background: #f1f5f9; border-radius: 12px; padding: 10px 14px; margin: 10px 0; border-left: 4px solid var(--accent,#6e0091); }
+    details.hint summary { cursor: pointer; font-weight: 700; color: var(--accent-ink,#4a1a5a); }
+    .space-note { background: #1a1a4a; color: #fbbf24; border-left: 4px solid #fbbf24; padding: 12px 16px; border-radius: 12px; margin: 12px 0; }
+    .mini-game {
+      background: linear-gradient(180deg,#0f0a1a,#1e1035); border-radius: 24px; padding: 20px;
+      border: 3px solid #8b5cf6; margin: 24px 0; color: #f8fafc;
+    }
+    .mini-game h2 { margin: 0 0 8px; color: #fbbf24; }
+    .game-hud {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+      margin: 12px 0 16px; padding: 12px 16px; background: rgba(0,0,0,.35); border-radius: 14px;
+    }
+    .game-hud .score { font-size: 1.4rem; font-weight: 800; }
+    .game-hud .door-state { padding: 6px 14px; border-radius: 20px; font-weight: 800; background: #7f1d1d; }
+    .game-hud .door-state.open { background: #14532d; }
+    .cave {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; min-height: 160px;
+      padding: 16px; background: radial-gradient(ellipse at center,#2e1065 0%,#0f0a1a 70%);
+      border-radius: 16px;
+    }
+    @media (max-width:600px) { .cave { grid-template-columns: repeat(3, 1fr); } }
+    .crystal-btn {
+      appearance: none; border: none; cursor: pointer; background: transparent;
+      font-size: 2.8rem; transition: transform .15s, filter .15s; filter: drop-shadow(0 0 8px #c084fc);
+      animation: float 2s ease-in-out infinite;
+    }
+    .crystal-btn:nth-child(2) { animation-delay: .2s; }
+    .crystal-btn:nth-child(3) { animation-delay: .4s; }
+    .crystal-btn:hover { transform: scale(1.2); }
+    .crystal-btn.taken { opacity: .15; filter: grayscale(1); pointer-events: none; transform: scale(.6); animation: none; }
+    .crystal-btn .pts { display: block; font-size: .7rem; font-weight: 800; color: #fde047; margin-top: -6px; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .door-visual {
+      margin-top: 14px; height: 70px; border-radius: 12px; display: grid; place-items: center;
+      font-weight: 800; font-size: 1.15rem; background: #450a0a; border: 3px solid #f87171; transition: .4s;
+    }
+    .door-visual.open { background: #14532d; border-color: #4ade80; opacity: .7; }
+    .key-btn {
+      margin-top: 10px; background: #fbbf24; color: #1a1a4a; border: none; padding: 10px 18px;
+      border-radius: 30px; font-weight: 800; cursor: pointer; font-size: 1rem;
+    }
+    .key-btn:disabled { opacity: .4; cursor: default; }
+    .choice-card {
+      cursor: pointer; transition: .15s; user-select: none; padding: 10px 14px; background: #fff;
+      border: 2px solid #e2e8f0; border-radius: 14px; display: block; margin: 8px 0; font-weight: 700;
+    }
+    .choice-card:hover { border-color: var(--primary); }
+    .choice-card.selected { border-color: var(--accent)!important; background: var(--accent-light)!important; }
+    .choice-card.correct { border-color: var(--primary)!important; background: var(--primary-light)!important; }
+    .choice-card.incorrect { border-color: var(--danger)!important; background: var(--danger-light)!important; }
+    .activity-result.done { background: var(--primary-light); color: var(--primary-dark); padding: 10px 16px; border-radius: 12px; font-weight: 700; }
+    .activity-result.neutral { background: var(--accent-light); color: var(--accent-ink); padding: 10px 16px; border-radius: 12px; font-weight: 700; }
+    .explorer-tree {
+      background: #1e293b; color: #e2e8f0; border-radius: 14px; padding: 14px 18px;
+      font-family: 'Courier New', monospace; font-size: .95rem; line-height: 1.7; margin: 12px 0;
+    }
+    .explorer-tree .folder { color: #60a5fa; }
+    .explorer-tree .part { color: #f472b6; }
+    .explorer-tree .val { color: #a3e635; }
+    .explorer-tree .scr { color: #fbbf24; }
+    .final-project {
+      background: linear-gradient(135deg,#f4e6ff,#e8f5e0); border: 2px dashed var(--accent,#6e0091);
+      border-radius: 20px; padding: 20px 24px; margin: 24px 0;
+    }
+    .reflection-box textarea { width: 100%; padding: 12px; border-radius: 12px; border: 2px solid var(--line); font-family: inherit; min-height: 80px; }
+    .how-it-works { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 10px; margin: 14px 0; }
+    .how-step { background: #f8fafc; border: 2px solid var(--line); border-radius: 14px; padding: 12px; text-align: center; }
+    .how-step .n { font-size: 1.5rem; }
+    .how-step b { display: block; margin: 4px 0; color: var(--primary-dark); }
+    .logic-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+    @media (max-width:700px) { .logic-grid { grid-template-columns: 1fr; } }
+    .logic-ok { background: #ecfdf5; border: 2px solid #34d399; border-radius: 14px; padding: 12px; }
+    .logic-no { background: #fef2f2; border: 2px solid #f87171; border-radius: 14px; padding: 12px; }
+    .tz-box { background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 18px 20px; margin: 16px 0; }
+    .quiz-block { margin: 18px 0; padding: 14px; background: #f8fafc; border-radius: 14px; border: 1px solid var(--line); }
+  </style>
+</head>
+<body class="lesson-page">
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="top-bar">
+      <a class="brand" href="Карта_курса.html">
+        <img src="https://robovita.by/wp-content/uploads/elementor/thumbs/dlya-sajtalogo-qej515h43prl8ythj1imhr4q78480k3bz18uut9d6o.png" alt="Логотип РОБОВИТА" loading="lazy" />
+        <div>
+          <div class="brand-name">РОБОВИТА</div>
+          <div class="brand-tag">учимся программировать роботов и игры</div>
+        </div>
+      </a>
+      <div class="crumbs"><a href="Карта_курса.html">Карта курса</a> · Занятие 2.7</div>
+    </div>
+    <div class="hero">
+      <div class="hex-badge">2.7</div>
+      <div>
+        <div class="module-pill">Раздел 2 · Программирование</div>
+        <h1>💎 Собирай кристаллы!</h1>
+        <p class="subtitle">Операторы: считаем очки, сравниваем и открываем дверь логикой</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="scenario-box">
+    <div class="scenario-avatar">💎</div>
+    <div>
+      <strong>Пещера кристаллов!</strong> Сначала разберём <b>операторы</b> — знаки в коде, которые считают и сравнивают.
+      Потом сыграем мини-игру на сайте и соберём ту же логику в Roblox:
+      кристалл → <code>+</code> очки → <code>&gt;=</code> хватает? → <code>and</code> есть ключ? → дверь открыта!
+    </div>
+  </div>
+
+  <div class="objectives">
+    <h2>🎯 На этом уроке ты:</h2>
+    <ul>
+      <li>узнаешь арифметические, сравнительные и логические операторы 📘</li>
+      <li>построишь пещеру: стены, кристаллы, ключ, дверь 🏗️</li>
+      <li>соберишь кристаллы касанием и прибавишь очки (<code>+</code>) 💎</li>
+      <li>откроешь дверь сравнением (<code>&gt;=</code>) и логикой (<code>and</code>) 🚪</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <table class="timetable">
+      <tr><th>Этап</th><th>Время</th><th>Что делаем</th></tr>
+      <tr><td>Теория операторов</td><td>15 мин</td><td>Арифметика, сравнения, логика, строки</td></tr>
+      <tr><td>Мини-игра на сайте</td><td>8 мин</td><td>Кристаллы → очки → ключ → дверь</td></tr>
+      <tr><td>Фаза 0 — Строим пещеру</td><td>18 мин</td><td>Стены, Spawn, Door, кристаллы, Key, Score</td></tr>
+      <tr><td>Фаза 1 — Сбор (+)</td><td>16 мин</td><td>Touched + прибавление очков</td></tr>
+      <tr><td>Фаза 2 — Дверь (>=)</td><td>12 мин</td><td>Открытие по очкам</td></tr>
+      <tr><td>Фаза 3 — Ключ (and)</td><td>13 мин</td><td>Очки и ключ вместе</td></tr>
+      <tr><td>Игра и рефлексия</td><td>8 мин</td><td>Пройти пещеру</td></tr>
+      <tr><td>Итого</td><td>90 мин</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== ТЕОРИЯ ===== -->
+  <div class="card" id="theory">
+    <h2><span class="num">0</span> Теория: что такое операторы?</h2>
+    <p><b>Оператор</b> — это знак (или слово) в коде, который говорит компьютеру, <em>что сделать</em> с числами, текстом или условиями.
+    Без операторов нельзя ни посчитать очки, ни спросить «хватает ли их для двери».</p>
+
+    <div class="theory-section">
+      <h3><span class="op-badge math">арифметика</span> Арифметические операторы</h3>
+      <p>Считают числа — как калькулятор. В пещере ими мы <b>прибавляем</b> очки за кристалл.</p>
+      <table class="prop-table">
+        <tr><th>Оператор</th><th>Действие</th><th>Пример</th><th>Результат</th><th>В игре</th></tr>
+        <tr><td><b>+</b></td><td>Сложение</td><td><code>30 + 20</code></td><td>50</td><td>Подобрал кристалл</td></tr>
+        <tr><td><b>-</b></td><td>Вычитание</td><td><code>50 - 10</code></td><td>40</td><td>Штраф / ловушка</td></tr>
+        <tr><td><b>*</b></td><td>Умножение</td><td><code>10 * 2</code></td><td>20</td><td>Двойные очки</td></tr>
+        <tr><td><b>/</b></td><td>Деление</td><td><code>20 / 2</code></td><td>10</td><td>Пополам</td></tr>
+        <tr><td><b>^</b></td><td>Степень</td><td><code>2 ^ 3</code></td><td>8</td><td>Супер-буст</td></tr>
+        <tr><td><b>%</b></td><td>Остаток</td><td><code>10 % 3</code></td><td>1</td><td>Чёт / нечёт</td></tr>
+      </table>
+      <div class="code-block">
+        <span class="keyword">local</span> score = <span class="number">30</span><br>
+        <span class="keyword">local</span> points = <span class="number">20</span><br>
+        score = score <span class="op">+</span> points   <span class="comment">-- стало 50</span><br>
+        <span class="func">print</span>(score)
+      </div>
+      <div class="info-callout amber">
+        <span class="bulb">⚠️</span>
+        <div>
+          <b>Скобки важны!</b> Сначала умножение и деление, потом сложение (как в математике).<br>
+          <code>(10 + 10) * 2</code> = 40 · а <code>10 + 10 * 2</code> = 30.
+        </div>
+      </div>
+    </div>
+
+    <div class="theory-section">
+      <h3><span class="op-badge cmp">сравнение</span> Операторы сравнения</h3>
+      <p>Отвечают <code>true</code> (да) или <code>false</code> (нет). Ими дверь спрашивает: «очков уже хватает?»</p>
+      <table class="prop-table">
+        <tr><th>Оператор</th><th>Вопрос</th><th>Пример</th><th>Результат</th></tr>
+        <tr><td><b>==</b></td><td>Равно?</td><td><code>50 == 50</code></td><td>true</td></tr>
+        <tr><td><b>~=</b></td><td>Не равно?</td><td><code>50 ~= 40</code></td><td>true</td></tr>
+        <tr><td><b>&lt;</b></td><td>Меньше?</td><td><code>40 &lt; 50</code></td><td>true</td></tr>
+        <tr><td><b>&gt;</b></td><td>Больше?</td><td><code>60 &gt; 50</code></td><td>true</td></tr>
+        <tr><td><b>&lt;=</b></td><td>Меньше или равно?</td><td><code>50 &lt;= 50</code></td><td>true</td></tr>
+        <tr><td><b>&gt;=</b></td><td>Больше или равно?</td><td><code>score &gt;= 50</code></td><td>true / false</td></tr>
+      </table>
+      <div class="info-callout">
+        <span class="bulb">💡</span>
+        <div>
+          <b>Самая частая ошибка!</b><br>
+          <code>=</code> — <b>положить</b> в переменную: <code>score = 0</code><br>
+          <code>==</code> — <b>спросить</b> «равно ли?»: <code>if score == 50 then</code><br>
+          В условиях почти всегда нужны <code>==</code>, <code>&gt;=</code>, <code>&lt;</code>… а не одиночный <code>=</code>.
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="keyword">local</span> need = <span class="number">50</span><br>
+        <span class="keyword">if</span> score <span class="op">&gt;=</span> need <span class="keyword">then</span><br>
+        &nbsp;&nbsp;<span class="func">print</span>(<span class="string">"Очков хватает!"</span>)<br>
+        <span class="keyword">else</span><br>
+        &nbsp;&nbsp;<span class="func">print</span>(<span class="string">"Собери ещё кристаллы"</span>)<br>
+        <span class="keyword">end</span>
+      </div>
+    </div>
+
+    <div class="theory-section">
+      <h3><span class="op-badge logic">логика</span> Логические операторы</h3>
+      <p>Склеивают несколько условий. В пещере дверь открывается только если <b>хватает очков</b> <em>и</em> <b>есть ключ</b>.</p>
+      <ul style="line-height:1.8;">
+        <li><b>and</b> — оба условия true → результат true</li>
+        <li><b>or</b> — хотя бы одно true → true</li>
+        <li><b>not</b> — переворачивает: <code>not false</code> → <code>true</code></li>
+      </ul>
+      <div class="logic-grid">
+        <div class="logic-ok">
+          <b>true and true</b> → true ✅<br>
+          <b>true or false</b> → true ✅<br>
+          <b>not false</b> → true ✅
+        </div>
+        <div class="logic-no">
+          <b>true and false</b> → false ❌<br>
+          <b>false or false</b> → false ❌<br>
+          <b>not true</b> → false ❌
+        </div>
+      </div>
+      <div class="code-block">
+        <span class="keyword">local</span> enough = score <span class="op">&gt;=</span> <span class="number">50</span><br>
+        <span class="keyword">local</span> hasKey = <span class="keyword">true</span><br>
+        <span class="keyword">if</span> enough <span class="keyword">and</span> hasKey <span class="keyword">then</span><br>
+        &nbsp;&nbsp;<span class="func">print</span>(<span class="string">"Дверь открыта!"</span>)<br>
+        <span class="keyword">end</span>
+      </div>
+      <p><b>В нашей игре:</b> 80 очков без ключа → дверь <em>закрыта</em> (and не пропускает). Ключ без очков → тоже закрыта.</p>
+    </div>
+
+    <div class="theory-section">
+      <h3><span class="op-badge str">строки</span> Склейка текста <code>..</code></h3>
+      <p>Оператор <code>..</code> (две точки) соединяет строки. Удобно для сообщений в Output:</p>
+      <div class="code-block">
+        <span class="func">print</span>(<span class="string">"Очки: "</span> <span class="op">..</span> score)  <span class="comment">-- Очки: 50</span>
+      </div>
+    </div>
+
+    <!-- Квизы по теории -->
+    <div class="quiz-block interactive-box" id="quizMath">
+      <h3>⚡ Проверка: арифметика</h3>
+      <p>Было 30 очков, подобрал кристалл на 20. Как правильно прибавить?</p>
+      <div class="choice-card" data-correct-choice="true">score = score + 20</div>
+      <div class="choice-card" data-correct-choice="false">score = score == 20</div>
+      <div class="choice-card" data-correct-choice="false">score + 20</div>
+      <button class="action-btn" onclick="checkChoices('quizMath')">Проверить</button>
+      <button class="action-btn" style="background:#64748b;box-shadow:0 4px 0 #334155;" onclick="resetQuiz('quizMath')">Ещё раз</button>
+      <div class="activity-result"></div>
+    </div>
+
+    <div class="quiz-block interactive-box" id="quizCmp">
+      <h3>⚡ Проверка: сравнение</h3>
+      <p>Чем отличается <code>=</code> от <code>==</code>?</p>
+      <div class="choice-card" data-correct-choice="true">= записывает значение, == спрашивает «равно ли?»</div>
+      <div class="choice-card" data-correct-choice="false">Они делают одно и то же</div>
+      <div class="choice-card" data-correct-choice="false">== только для текста, = только для чисел</div>
+      <button class="action-btn" onclick="checkChoices('quizCmp')">Проверить</button>
+      <button class="action-btn" style="background:#64748b;box-shadow:0 4px 0 #334155;" onclick="resetQuiz('quizCmp')">Ещё раз</button>
+      <div class="activity-result"></div>
+    </div>
+
+    <div class="quiz-block interactive-box" id="quizLogic">
+      <h3>⚡ Проверка: логика and</h3>
+      <p>При <code>if score &gt;= 50 and hasKey then</code> дверь откроется, когда:</p>
+      <div class="choice-card" data-correct-choice="false">score = 40, hasKey = true</div>
+      <div class="choice-card" data-correct-choice="true">score = 50, hasKey = true</div>
+      <div class="choice-card" data-correct-choice="false">score = 80, hasKey = false</div>
+      <button class="action-btn" onclick="checkChoices('quizLogic')">Проверить</button>
+      <button class="action-btn" style="background:#64748b;box-shadow:0 4px 0 #334155;" onclick="resetQuiz('quizLogic')">Ещё раз</button>
+      <div class="activity-result"></div>
+    </div>
+  </div>
+
+  <div class="cheat-sheet">
+    <div class="cheat-grid">
+      <div class="cheat-item"><div class="title">➕ Арифметика</div><div class="rule"><code>+ - * / ^ %</code></div><div class="rule"><code>score = score + 10</code></div></div>
+      <div class="cheat-item"><div class="title">⚖️ Сравнение</div><div class="rule"><code>== ~= &lt; &gt; &lt;= &gt;=</code></div><div class="rule"><code>if score &gt;= 50 then</code></div></div>
+      <div class="cheat-item"><div class="title">🧠 Логика</div><div class="rule"><code>and</code> · <code>or</code> · <code>not</code></div><div class="rule"><code>enough and hasKey</code></div></div>
+      <div class="cheat-item"><div class="title">📝 Строки</div><div class="rule"><code>"Очки: " .. score</code></div></div>
+      <div class="cheat-item"><div class="title">🦶 Касание</div><div class="rule"><code>Touched:Connect(...)</code></div></div>
+      <div class="cheat-item"><div class="title">🚪 Открыть дверь</div><div class="rule"><code>CanCollide = false</code></div></div>
+    </div>
+  </div>
+
+  <!-- ===== МИНИ-ИГРА ===== -->
+  <div class="mini-game" id="miniGame">
+    <h2>🎮 Попробуй операторы здесь</h2>
+    <p style="opacity:.9;margin:0 0 8px;">Кликай кристаллы (<code>+</code>). Возьми ключ. Дверь откроется при <code>очки &gt;= 50 and ключ</code>.</p>
+    <div class="game-hud">
+      <div class="score">💎 Очки: <span id="gScore">0</span></div>
+      <div class="need">Нужно: <b>50</b> · Ключ: <span id="gKey">❌</span></div>
+      <div class="door-state" id="gDoorLabel">🚪 ЗАКРЫТА</div>
+    </div>
+    <div class="cave" id="cave">
+      <button type="button" class="crystal-btn" data-pts="10" onclick="pickCrystal(this)">💎<span class="pts">+10</span></button>
+      <button type="button" class="crystal-btn" data-pts="20" onclick="pickCrystal(this)">💜<span class="pts">+20</span></button>
+      <button type="button" class="crystal-btn" data-pts="10" onclick="pickCrystal(this)">💎<span class="pts">+10</span></button>
+      <button type="button" class="crystal-btn" data-pts="30" onclick="pickCrystal(this)">✨<span class="pts">+30</span></button>
+      <button type="button" class="crystal-btn" data-pts="15" onclick="pickCrystal(this)">💎<span class="pts">+15</span></button>
+    </div>
+    <button type="button" class="key-btn" id="keyBtn" onclick="takeKey()">🔑 Взять ключ</button>
+    <button type="button" class="key-btn" style="background:#64748b;color:#fff;margin-left:8px;" onclick="resetGame()">🔄 Заново</button>
+    <div class="door-visual" id="gDoor">🚪 Нужно: очки ≥ 50 <b>и</b> ключ</div>
+    <p id="gMsg" style="margin:10px 0 0;font-weight:700;color:#fde047;"></p>
+  </div>
+
+  <div class="card">
+    <h2>🧠 Что делает код (та же логика)</h2>
+    <div class="how-it-works">
+      <div class="how-step"><div class="n">1️⃣</div><b>Кристалл</b>score = score <code>+</code> points</div>
+      <div class="how-step"><div class="n">2️⃣</div><b>Ключ</b>hasKey = true</div>
+      <div class="how-step"><div class="n">3️⃣</div><b>Сравнение</b>enough = score <code>&gt;=</code> 50</div>
+      <div class="how-step"><div class="n">4️⃣</div><b>Логика</b>enough <code>and</code> hasKey</div>
+      <div class="how-step"><div class="n">5️⃣</div><b>Дверь</b>открылась!</div>
+    </div>
+  </div>
+
+  <div class="ai-helper">
+    <div class="ai-head">
+      <span style="font-size:32px;line-height:1;">🤖</span>
+      <div class="t">Спроси Алису</div>
+    </div>
+    <div class="ai-buttons">
+      <a href="https://ya.ru/alice?alice_deeplink=%7B%22text%22%3A%22%D0%A7%D0%B5%D0%BC%20%D0%BE%D1%82%D0%BB%D0%B8%D1%87%D0%B0%D0%B5%D1%82%D1%81%D1%8F%20%3D%20%D0%BE%D1%82%20%3D%3D%20%D0%B2%20Lua%3F%22%7D" target="_blank" class="alice-q-btn">Чем = отличается от ==?</a>
+      <a href="https://ya.ru/alice?alice_deeplink=%7B%22text%22%3A%22%D0%A7%D1%82%D0%BE%20%D0%B4%D0%B5%D0%BB%D0%B0%D0%B5%D1%82%20%D0%BE%D0%BF%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80%20and%20%D0%B2%20Lua%3F%22%7D" target="_blank" class="alice-q-btn">Что делает and?</a>
+      <a href="https://ya.ru/alice?alice_deeplink=%7B%22text%22%3A%22%D0%9A%D0%B0%D0%BA%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%B5%D1%82%20Touched%20%D0%B2%20Roblox%3F%22%7D" target="_blank" class="alice-q-btn">Как работает Touched?</a>
+    </div>
+  </div>
+
+  <!-- ===== ПРОЕКТ ===== -->
+  <div class="project-box" id="mainProject">
+    <h2>💎 Проект «Пещера кристаллов»</h2>
+    <p><b>Цель:</b> построить пещеру → собирать кристаллы → взять ключ → открыть дверь. Все фазы идут по порядку.</p>
+
+    <div class="progress-track"><div class="progress-fill" id="projectProgress"></div></div>
+    <span class="progress-label" id="projectLabel">Выполнено шагов: 0 из 12</span>
+
+    <!-- ФАЗА 0: СТРОИМ -->
+    <div class="tz-box" id="phase0">
+      <h3 style="margin-top:0;color:var(--primary-dark);">🏗️ Фаза 0 — Строим пещеру <span class="phase-time">18 мин</span></h3>
+      <p>Все игровые объекты сложи в папку <b>Cave</b> в Workspace. У деталей поставь <b>Anchored = true</b>.</p>
+
+      <div class="phase" style="margin:12px 0;">
+        <h3>1. Стены и пол</h3>
+        <ul>
+          <li>Пол: Part ≈ 40×1×40.</li>
+          <li>Стены по краям (высота 15–20), оставь проём ~8×10 под дверь.</li>
+          <li>Можно Terrain или обычные Part + камни из Toolbox.</li>
+        </ul>
+      </div>
+      <div class="phase" style="margin:12px 0;">
+        <h3>2. SpawnLocation</h3>
+        <p>Внутри пещеры: Model → SpawnLocation — игрок появится здесь.</p>
+      </div>
+      <div class="phase" style="margin:12px 0;">
+        <h3>3. Door</h3>
+        <p>В проёме Part ≈ 1×8×6, имя <b>Door</b>, цвет Really black.</p>
+      </div>
+      <div class="phase" style="margin:12px 0;">
+        <h3>4. Кристаллы Crystal1…Crystal5</h3>
+        <p>5× Part, Shape = <b>Ball</b>, Material = <b>Neon</b>, разные цвета. Разбросай по пещере.</p>
+      </div>
+      <div class="phase" style="margin:12px 0;">
+        <h3>5. Key</h3>
+        <p>Маленький жёлтый Neon Part, имя <b>Key</b>.</p>
+      </div>
+      <div class="phase" style="margin:12px 0;">
+        <h3>6. Score и HasKey</h3>
+        <p>В папке Cave: <b>IntValue</b> → имя Score, Value = 0. <b>BoolValue</b> → имя HasKey, Value = false.</p>
+        <div class="info-callout purple">
+          <span class="bulb">📦</span>
+          <div>Выдели Cave → <b>+</b> в Explorer → IntValue / BoolValue → переименуй.</div>
+        </div>
+      </div>
+
+      <div class="explorer-tree">
+        <span class="folder">📁 Cave</span><br>
+        &nbsp;&nbsp;<span class="part">🚪 Door</span><br>
+        &nbsp;&nbsp;<span class="part">💎 Crystal1</span> … <span class="part">Crystal5</span><br>
+        &nbsp;&nbsp;<span class="part">🔑 Key</span><br>
+        &nbsp;&nbsp;<span class="val">📊 Score</span> (IntValue = 0)<br>
+        &nbsp;&nbsp;<span class="val">✅ HasKey</span> (BoolValue = false)
+      </div>
+
+      <ul class="task-steps">
+        <li><input type="checkbox" id="p0s0" onchange="updateProjectProgress()"><label for="p0s0">Пещера с полом/стенами и SpawnLocation внутри.</label></li>
+        <li><input type="checkbox" id="p0s1" onchange="updateProjectProgress()"><label for="p0s1">В Cave: Door, Crystal1–5, Key, Score=0, HasKey=false.</label></li>
+        <li><input type="checkbox" id="p0s2" onchange="updateProjectProgress()"><label for="p0s2">Все Part с Anchored = true.</label></li>
+      </ul>
+    </div>
+
+    <!-- ФАЗА 1 -->
+    <div class="phase" id="phase1">
+      <h3>💎 Фаза 1 — Кристалл даёт очки (<code>+</code>) <span class="phase-time">16 мин</span></h3>
+      <p>В <b>каждый</b> кристалл добавь Script <code>CollectScript</code>. Наступил → очки <code>+</code> → кристалл исчез.</p>
+      <div class="code-block">
+        <span class="comment">-- CollectScript внутри кристалла</span><br>
+        <span class="keyword">local</span> crystal = script.Parent<br>
+        <span class="keyword">local</span> score = workspace.Cave.Score<br>
+        <span class="keyword">local</span> points = <span class="number">10</span>  <span class="comment">-- сила этого кристалла</span><br><br>
+        crystal.Touched:<span class="func">Connect</span>(<span class="keyword">function</span>(hit)<br>
+        &nbsp;&nbsp;<span class="keyword">if</span> hit.Parent:FindFirstChild(<span class="string">"Humanoid"</span>) <span class="keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;score.Value = score.Value <span class="op">+</span> points<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="func">print</span>(<span class="string">"Очки: "</span> .. score.Value)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;crystal:<span class="func">Destroy</span>()<br>
+        &nbsp;&nbsp;<span class="keyword">end</span><br>
+        <span class="keyword">end</span>)
+      </div>
+      <div class="info-callout green">
+        <span class="bulb">✨</span>
+        <div>
+          <b>Разная сила:</b> Crystal1–2 → 10 · Crystal3 → 20 · Crystal4 → 15 · Crystal5 → 30.<br>
+          Максимум: 10+10+20+15+30 = <b>85</b>. Для двери нужно <b>50</b>.
+        </div>
+      </div>
+      <ul class="task-steps">
+        <li><input type="checkbox" id="p1s0" onchange="updateProjectProgress()"><label for="p1s0">CollectScript во всех 5 кристаллах, разные points.</label></li>
+        <li><input type="checkbox" id="p1s1" onchange="updateProjectProgress()"><label for="p1s1">Play → наступил → кристалл исчез, в Output растут очки.</label></li>
+        <li><input type="checkbox" id="p1s2" onchange="updateProjectProgress()"><label for="p1s2">В Explorer у Score.Value число растёт после сбора.</label></li>
+      </ul>
+      <details class="hint"><summary>📖 Кристалл не работает?</summary>
+        <ul>
+          <li>Папка называется именно <code>Cave</code>, IntValue — <code>Score</code>.</li>
+          <li>Скрипт лежит <b>внутри</b> кристалла.</li>
+          <li>Anchored = true. Смотри View → Output на красные ошибки.</li>
+        </ul>
+      </details>
+    </div>
+
+    <!-- ФАЗА 2 -->
+    <div class="phase" id="phase2">
+      <h3>🚪 Фаза 2 — Дверь по очкам (<code>&gt;=</code>) <span class="phase-time">12 мин</span></h3>
+      <p>В <b>ServerScriptService</b> создай <code>DoorScript</code>. Пока проверяем <b>только очки</b> (ключ добавим в следующей фазе).</p>
+      <div class="code-block">
+        <span class="comment">-- DoorScript (версия 1: только очки)</span><br>
+        <span class="keyword">local</span> door = workspace.Cave.Door<br>
+        <span class="keyword">local</span> score = workspace.Cave.Score<br>
+        <span class="keyword">local</span> need = <span class="number">50</span><br><br>
+        <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span><br>
+        &nbsp;&nbsp;<span class="func">wait</span>(<span class="number">0.5</span>)<br>
+        &nbsp;&nbsp;<span class="keyword">if</span> score.Value <span class="op">&gt;=</span> need <span class="keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.Transparency = <span class="number">0.8</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.CanCollide = <span class="keyword">false</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.BrickColor = BrickColor.new(<span class="string">"Bright green"</span>)<br>
+        &nbsp;&nbsp;<span class="keyword">else</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.Transparency = <span class="number">0</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.CanCollide = <span class="keyword">true</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.BrickColor = BrickColor.new(<span class="string">"Really black"</span>)<br>
+        &nbsp;&nbsp;<span class="keyword">end</span><br>
+        <span class="keyword">end</span>
+      </div>
+      <ul class="task-steps">
+        <li><input type="checkbox" id="p2s0" onchange="updateProjectProgress()"><label for="p2s0">DoorScript в ServerScriptService.</label></li>
+        <li><input type="checkbox" id="p2s1" onchange="updateProjectProgress()"><label for="p2s1">Набрал ≥ 50 — дверь зелёная и можно пройти.</label></li>
+      </ul>
+    </div>
+
+    <!-- ФАЗА 3 -->
+    <div class="phase" id="phase3">
+      <h3>🔑 Фаза 3 — Ключ и <code>and</code> <span class="phase-time">13 мин</span></h3>
+      <p>В Part <b>Key</b> — Script <code>KeyScript</code>:</p>
+      <div class="code-block">
+        <span class="comment">-- KeyScript внутри Key</span><br>
+        <span class="keyword">local</span> key = script.Parent<br>
+        <span class="keyword">local</span> hasKey = workspace.Cave.HasKey<br><br>
+        key.Touched:<span class="func">Connect</span>(<span class="keyword">function</span>(hit)<br>
+        &nbsp;&nbsp;<span class="keyword">if</span> hit.Parent:FindFirstChild(<span class="string">"Humanoid"</span>) <span class="keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;hasKey.Value = <span class="keyword">true</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="func">print</span>(<span class="string">"Ключ получен!"</span>)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;key:<span class="func">Destroy</span>()<br>
+        &nbsp;&nbsp;<span class="keyword">end</span><br>
+        <span class="keyword">end</span>)
+      </div>
+      <p>Замени <b>весь</b> DoorScript на версию с <code>and</code>:</p>
+      <div class="code-block">
+        <span class="comment">-- DoorScript (версия 2: очки AND ключ)</span><br>
+        <span class="keyword">local</span> door = workspace.Cave.Door<br>
+        <span class="keyword">local</span> score = workspace.Cave.Score<br>
+        <span class="keyword">local</span> hasKey = workspace.Cave.HasKey<br>
+        <span class="keyword">local</span> need = <span class="number">50</span><br><br>
+        <span class="keyword">while</span> <span class="keyword">true</span> <span class="keyword">do</span><br>
+        &nbsp;&nbsp;<span class="func">wait</span>(<span class="number">0.5</span>)<br>
+        &nbsp;&nbsp;<span class="keyword">local</span> enough = score.Value <span class="op">&gt;=</span> need<br>
+        &nbsp;&nbsp;<span class="keyword">if</span> enough <span class="keyword">and</span> hasKey.Value <span class="keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.Transparency = <span class="number">0.8</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.CanCollide = <span class="keyword">false</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.BrickColor = BrickColor.new(<span class="string">"Bright green"</span>)<br>
+        &nbsp;&nbsp;<span class="keyword">else</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.Transparency = <span class="number">0</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.CanCollide = <span class="keyword">true</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;door.BrickColor = BrickColor.new(<span class="string">"Really black"</span>)<br>
+        &nbsp;&nbsp;<span class="keyword">end</span><br>
+        <span class="keyword">end</span>
+      </div>
+      <ul class="task-steps">
+        <li><input type="checkbox" id="p3s0" onchange="updateProjectProgress()"><label for="p3s0">KeyScript: ключ исчезает, Output «Ключ получен!».</label></li>
+        <li><input type="checkbox" id="p3s1" onchange="updateProjectProgress()"><label for="p3s1">Только очки без ключа — дверь закрыта.</label></li>
+        <li><input type="checkbox" id="p3s2" onchange="updateProjectProgress()"><label for="p3s2">Очки ≥ 50 и ключ — дверь открыта, прошёл пещеру!</label></li>
+      </ul>
+      <div class="space-note">🎉 Готово! В одной игре ты использовал + , &gt;= , and и склейку строк ..</div>
+    </div>
+
+    <div class="explorer-tree">
+      <span class="folder">📁 Cave</span> — Door, Crystal1–5 (+ CollectScript), Key (+ KeyScript), Score, HasKey<br>
+      <span class="folder">📁 ServerScriptService</span> — DoorScript
+    </div>
+  </div>
+
+  <div class="final-project">
+    <h3>🌟 Бонус</h3>
+    <ul>
+      <li>Укрась пещеру из Toolbox (камни, факелы, сундук за дверью).</li>
+      <li>Добавь мастер-ключ с <code>or</code>: открывает дверь без 50 очков.</li>
+      <li>Двойные очки: <code>score.Value = score.Value + points * 2</code>.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>💡 Сегодня ты узнал и создал:</h2>
+    <table class="prop-table">
+      <tr><th>Оператор</th><th>Где применил</th></tr>
+      <tr><td><code>+</code></td><td>Сбор кристалла → очки</td></tr>
+      <tr><td><code>&gt;=</code></td><td>Хватает ли очков для двери</td></tr>
+      <tr><td><code>and</code></td><td>Очки и ключ вместе</td></tr>
+      <tr><td><code>..</code></td><td>Сообщение «Очки: …» в Output</td></tr>
+    </table>
+  </div>
+
+  <div class="reflection-box">
+    <h2>💭 Рефлексия</h2>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0 12px;">
+      <label style="display:flex;align-items:center;gap:6px;background:var(--primary-light);padding:6px 14px;border-radius:30px;"><input type="radio" name="satisfaction" value="yes"> 🚀 Собрал кристаллы и открыл дверь!</label>
+      <label style="display:flex;align-items:center;gap:6px;background:var(--primary-light);padding:6px 14px;border-radius:30px;"><input type="radio" name="satisfaction" value="ok"> 🤔 Почти всё понял</label>
+      <label style="display:flex;align-items:center;gap:6px;background:var(--primary-light);padding:6px 14px;border-radius:30px;"><input type="radio" name="satisfaction" value="no"> 😕 Нужна помощь</label>
+    </div>
+    <textarea placeholder="Какой оператор запомнился: +, >= или and? Сколько очков набрал?"></textarea>
+  </div>
+
+  <div class="lesson-nav">
+    <a class="nav-btn prev" href="Занятие_2.6_Циклы.html">
+      <div class="lbl">← Назад</div>
+      <div class="ttl">2.6 Циклы</div>
+    </a>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-brand">
+      <img src="https://robovita.by/wp-content/uploads/elementor/thumbs/dlya-sajtalogo-qej515h43prl8ythj1imhr4q78480k3bz18uut9d6o.png" alt="Логотип РОБОВИТА">
+      Учебный центр «РОБОВИТА»
+    </div>
+    <div>Занятие 2.7 · Собирай кристаллы · Операторы</div>
+  </div>
+</footer>
+
+<script src="assets/js/lesson.js"></script>
+<script>
+  let gScore = 0, gHasKey = false;
+  const NEED = 50;
+
+  function updateDoor() {
+    const enough = gScore >= NEED;
+    const open = enough && gHasKey;
+    const door = document.getElementById('gDoor');
+    const label = document.getElementById('gDoorLabel');
+    const msg = document.getElementById('gMsg');
+    document.getElementById('gScore').textContent = gScore;
+    document.getElementById('gKey').textContent = gHasKey ? '✅' : '❌';
+    if (open) {
+      door.classList.add('open');
+      door.textContent = '🚪 Дверь ОТКРЫТА — можно пройти!';
+      label.classList.add('open');
+      label.textContent = '🚪 ОТКРЫТА';
+      msg.textContent = '✅ enough and hasKey → true';
+    } else {
+      door.classList.remove('open');
+      door.textContent = '🚪 Нужно: очки ≥ 50 и ключ';
+      label.classList.remove('open');
+      label.textContent = '🚪 ЗАКРЫТА';
+      if (enough && !gHasKey) msg.textContent = 'Очков хватает, но нет ключа — and не пропускает!';
+      else if (!enough && gHasKey) msg.textContent = 'Ключ есть, очков мало (нужно ≥ 50).';
+      else msg.textContent = '';
+    }
+  }
+
+  function pickCrystal(btn) {
+    if (btn.classList.contains('taken')) return;
+    gScore = gScore + Number(btn.dataset.pts);
+    btn.classList.add('taken');
+    updateDoor();
+  }
+
+  function takeKey() {
+    gHasKey = true;
+    document.getElementById('keyBtn').disabled = true;
+    updateDoor();
+  }
+
+  function resetGame() {
+    gScore = 0;
+    gHasKey = false;
+    document.getElementById('keyBtn').disabled = false;
+    document.querySelectorAll('.crystal-btn').forEach(b => b.classList.remove('taken'));
+    updateDoor();
+  }
+
+  function updateProjectProgress() {
+    const cbs = document.querySelectorAll('#mainProject .task-steps input[type=checkbox]');
+    const done = Array.from(cbs).filter(c => c.checked).length;
+    const total = cbs.length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('projectProgress').style.width = pct + '%';
+    document.getElementById('projectLabel').textContent = 'Выполнено шагов: ' + done + ' из ' + total;
+  }
+
+  function checkChoices(id) {
+    const box = document.getElementById(id);
+    const cards = box.querySelectorAll('.choice-card');
+    const selected = box.querySelectorAll('.choice-card.selected');
+    const result = box.querySelector('.activity-result');
+    cards.forEach(c => c.classList.remove('correct', 'incorrect'));
+    if (!selected.length) {
+      result.textContent = '⚠️ Выбери ответ!';
+      result.className = 'activity-result neutral';
+      return;
+    }
+    let ok = selected.length === 1 && selected[0].dataset.correctChoice === 'true';
+    selected.forEach(c => {
+      c.classList.add(c.dataset.correctChoice === 'true' ? 'correct' : 'incorrect');
+    });
+    result.textContent = ok ? '✅ Верно!' : '❌ Попробуй ещё раз.';
+    result.className = 'activity-result ' + (ok ? 'done' : 'neutral');
+  }
+
+  function resetQuiz(id) {
+    const box = document.getElementById(id);
+    box.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected', 'correct', 'incorrect'));
+    const r = box.querySelector('.activity-result');
+    r.textContent = '';
+    r.className = 'activity-result';
+  }
+
+  document.addEventListener('click', function(e) {
+    const card = e.target.closest('.choice-card');
+    if (!card) return;
+    const box = card.closest('.interactive-box');
+    if (!box) return;
+    box.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected', 'correct', 'incorrect'));
+    card.classList.add('selected');
+  });
+</script>
+</body>
+</html>
