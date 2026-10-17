@@ -31,7 +31,7 @@
             line-height: 1.55;
         }
         .wrap {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 20px 40px;
         }
@@ -87,11 +87,11 @@
         /* карточки курсов */
         .courses-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 24px;
             margin: 24px 0;
         }
-        @media (max-width: 700px) {
+        @media (max-width: 900px) {
             .courses-grid {
                 grid-template-columns: 1fr;
             }
@@ -121,6 +121,9 @@
         .course-card.roblox {
             border-top: 6px solid #3B82F6;
         }
+        .course-card.minecraft {
+            border-top: 6px solid #3D8C40;
+        }
         .course-badge {
             display: inline-block;
             padding: 6px 16px;
@@ -137,6 +140,10 @@
         .course-card.roblox .course-badge {
             background: #DBEAFE;
             color: #1E3A8A;
+        }
+        .course-card.minecraft .course-badge {
+            background: #E7F5DC;
+            color: #1F4D1A;
         }
         .course-card h2 {
             margin: 0 0 8px;
@@ -188,6 +195,13 @@
         }
         .course-link.ai-link:hover {
             background: #5b0080;
+        }
+        .course-link.minecraft-link {
+            background: #3D8C40;
+            box-shadow: 0 4px 0 #1B4D1E;
+        }
+        .course-link.minecraft-link:hover {
+            background: #2E7D32;
         }
 
         /* информационный блок */
@@ -245,13 +259,13 @@
             </div>
             <div class="hero">
                 <h1>🚀 Выбери свой курс</h1>
-                <p class="subtitle">Два направления: искусственный интеллект и создание игр в Roblox Studio</p>
+                <p class="subtitle">Три направления: искусственный интеллект, создание игр в Roblox Studio и программирование в Minecraft</p>
             </div>
         </div>
     </header>
 
     <main class="wrap">
-        <!-- две карточки курсов -->
+        <!-- три карточки курсов -->
         <div class="courses-grid">
             <!-- ИИ -->
             <a class="course-card ai" href="AI/Карта.html">
@@ -279,12 +293,29 @@
                     Более 40 занятий с увлекательной практикой и программированием на Lua.
                 </p>
                 <ul class="course-features">
-                    <li>🏗️ Моделирование</li>
+                    <li>🏗 Моделирование</li>
                     <li>📜 Скрипты Lua</li>
-                    <li>🖥️ Интерфейсы</li>
+                    <li>🖥 Интерфейсы</li>
                     <li>📦 13 проектов</li>
                 </ul>
                 <span class="course-link">📋 Смотреть карту курса</span>
+            </a>
+
+            <!-- Minecraft -->
+            <a class="course-card minecraft" href="minecraft/index.html">
+                <span class="course-badge">⛏️ Minecraft Education</span>
+                <h2>Программирование в Minecraft</h2>
+                <p class="course-desc">
+                    Блочное программирование и Python прямо в мире Minecraft Education.
+                    Ребёнок учит циклы, условия и функции, управляя агентом: строит, исследует и создаёт собственные проекты в игре.
+                </p>
+                <ul class="course-features">
+                    <li>🧩 Блочный код</li>
+                    <li>🐍 Python</li>
+                    <li>🤖 Агент</li>
+                    <li>🎮 Minecraft Education</li>
+                </ul>
+                <span class="course-link minecraft-link">📋 Смотреть карту курса</span>
             </a>
         </div>
 
@@ -305,7 +336,7 @@
                 <img src="https://robovita.by/wp-content/uploads/elementor/thumbs/dlya-sajtalogo-qej515h43prl8ythj1imhr4q78480k3bz18uut9d6o.png" alt="Логотип РОБОВИТА">
                 Учебный центр «РОБОВИТА»
             </div>
-            <div>Курсы для детей · ИИ и Roblox</div>
+            <div>Курсы для детей · ИИ, Roblox и Minecraft</div>
         </div>
     </footer>
 </body>

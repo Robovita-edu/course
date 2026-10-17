@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ИИ-Творец · Занятие 8 · Управление контекстом</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #61B01F; --green-dark: #2E4A17; --green-light: #E8F5E0;
+      --purple: #6C3F9B; --purple-light: #F4EAFA;
+      --orange: #F0A500; --orange-light: #FFF4DB; --orange-ink: #875B00;
+      --navy: #12274C; --violet: #7C3AED; --violet-light: #F5F3FF;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body { font-family: 'Nunito', sans-serif; background: #fff; overflow: hidden; height: 100vh; color: var(--green-dark); }
+    .presentation { display: flex; flex-direction: column; height: 100vh; }
+    .slide-stage { flex: 1; position: relative; overflow: hidden; }
+    .slide {
+      display: none; width: 100%; height: 100%; padding: 28px 48px 20px;
+      position: absolute; top: 0; left: 0; overflow-y: auto; background: #fff; animation: fade .4s ease;
+    }
+    .slide.active { display: flex; align-items: center; justify-content: center; }
+    .slide-inner {
+      width: 100%; margin: auto; display: grid; grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px; align-items: center; height: 100%; padding: 0 1.5vw;
+    }
+    .slide-inner.full, .slide-inner.stack { grid-template-columns: 1fr; }
+    .title-slide { background: var(--navy); color: #fff; }
+    .title-slide .slide-inner { grid-template-columns: 1.1fr 0.9fr; }
+    .title-slide h1 { font-size: clamp(32px, 5vw, 58px); font-weight: 900; letter-spacing: -0.03em; line-height: 1.05; }
+    .title-slide h2 { font-size: clamp(24px, 3.5vw, 40px); font-weight: 800; color: #c4b5fd; margin: 10px 0; }
+    .title-slide p { font-size: clamp(18px, 2.1vw, 26px); font-weight: 700; opacity: .95; }
+    .title-slide .stars {
+      position: absolute; inset: 0; pointer-events: none; opacity: .35;
+      background-image: radial-gradient(2px 2px at 20% 30%, #fff, transparent),
+        radial-gradient(2px 2px at 70% 20%, #fff, transparent),
+        radial-gradient(1.5px 1.5px at 40% 70%, #c4b5fd, transparent),
+        radial-gradient(2px 2px at 85% 60%, #fff, transparent);
+    }
+    .eyebrow {
+      display: inline-block; padding: 8px 18px; border-radius: 99px;
+      font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em;
+      background: var(--green-light); color: var(--green-dark);
+    }
+    h2 { font-size: clamp(30px, 4.4vw, 52px); font-weight: 900; line-height: 1.1; color: var(--green-dark); margin: 10px 0 8px; }
+    .lead { font-weight: 800; font-size: clamp(18px, 2vw, 26px); line-height: 1.45; }
+    .list { margin-top: 16px; display: grid; gap: 12px; font-size: clamp(17px, 1.9vw, 24px); font-weight: 800; }
+    .list span { display: flex; align-items: flex-start; gap: 10px; }
+    .tick {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--green-light);
+      display: grid; place-items: center; color: var(--green); font-size: 14px; flex-shrink: 0;
+    }
+    .note {
+      padding: 16px 20px; border-radius: 18px; background: var(--orange-light); color: var(--orange-ink);
+      font-weight: 800; font-size: clamp(16px, 1.6vw, 22px); margin-top: 14px;
+    }
+    .note.green { background: var(--green-light); color: var(--green-dark); }
+    .note.purple { background: var(--purple-light); color: var(--purple); }
+    .discuss {
+      margin-top: 14px; padding: 12px 16px; border-radius: 16px; border: 2px dashed var(--purple);
+      background: #faf5ff; color: var(--purple); font-weight: 800; font-size: clamp(16px, 1.7vw, 22px);
+    }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+    .can-card { padding: 16px; border-radius: 20px; font-weight: 800; }
+    .can-card h3 { font-size: clamp(16px, 1.5vw, 22px); margin-bottom: 6px; }
+    .can-card ul { list-style: none; padding: 0; font-size: clamp(15px, 1.5vw, 20px); display: grid; gap: 4px; }
+    .can { background: var(--green-light); color: var(--green-dark); }
+    .cannot { background: var(--purple-light); color: var(--purple); }
+    .steps { display: grid; gap: 10px; margin-top: 12px; }
+    .step {
+      display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
+      background: var(--green-light); border-radius: 16px; padding: 12px 14px; font-weight: 800;
+      font-size: clamp(16px, 1.7vw, 22px);
+    }
+    .step-num {
+      min-width: 42px; height: 42px; border-radius: 999px; font-size: 14px; background: var(--green); color: #fff;
+      display: grid; place-items: center; font-weight: 900;
+    }
+    .step.alt { background: var(--purple-light); }
+    .step.alt .step-num { background: var(--purple); }
+    .step.warn { background: var(--orange-light); }
+    .step.warn .step-num { background: var(--orange); color: #3E2C0B; }
+    .crystal-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 16px; }
+    .crystal-card {
+      background: var(--violet-light); border: 3px solid #c4b5fd; border-radius: 20px;
+      padding: 16px 12px; text-align: center; font-weight: 800;
+    }
+    .crystal-card .ico { font-size: clamp(32px, 3.4vw, 46px); display: block; margin-bottom: 6px; }
+    .crystal-card b { display: block; font-size: clamp(15px, 1.4vw, 20px); color: var(--violet); margin-bottom: 4px; }
+    .crystal-card span { font-size: clamp(13px, 1.2vw, 17px); color: #5b21b6; }
+    .chat-bubble {
+      border-radius: 16px; padding: 12px 16px; font-weight: 800;
+      font-size: clamp(15px, 1.5vw, 21px); line-height: 1.4; margin-bottom: 10px;
+    }
+    .bad { background: var(--orange-light); border: 3px solid #f5c15a; color: var(--orange-ink); }
+    .good { background: var(--green-light); border: 3px solid #9bce75; color: var(--green-dark); }
+    .illustration {
+      position: relative; min-height: 280px; display: flex; align-items: center; justify-content: center;
+    }
+    .tower-art {
+      width: min(320px, 80%); aspect-ratio: 3/4; border-radius: 28px;
+      background: linear-gradient(160deg, #1E1B4B, #312E81 48%, #0EA5E9);
+      display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
+      box-shadow: 0 20px 40px rgba(46,16,101,.35); padding: 20px; color: #fff; font-weight: 900;
+    }
+    .tower-art .gem {
+      width: 64px; height: 64px; border-radius: 16px; background: rgba(255,255,255,.15);
+      border: 2px solid rgba(251,191,36,.8); display: grid; place-items: center; font-size: 28px;
+      box-shadow: 0 0 16px rgba(251,191,36,.4);
+    }
+    .big-emoji { font-size: clamp(80px, 12vw, 140px); text-align: center; line-height: 1; }
+    .check-list { margin-top: 12px; display: grid; gap: 8px; }
+    .check-item {
+      display: flex; gap: 10px; align-items: flex-start; font-weight: 800;
+      font-size: clamp(16px, 1.6vw, 22px); background: var(--green-light);
+      padding: 10px 14px; border-radius: 14px;
+    }
+    .check-item .ok { color: var(--green); font-size: 22px; }
+    .cta-link {
+      display: inline-flex; align-items: center; gap: 8px; margin-top: 12px;
+      background: var(--green); color: #fff; padding: 12px 22px; border-radius: 30px;
+      font-weight: 900; text-decoration: none; font-size: clamp(16px, 1.7vw, 22px);
+      box-shadow: 0 4px 0 #4a8a18;
+    }
+    .ref-links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .ref-links a {
+      background: #f0f4f9; padding: 4px 12px; border-radius: 20px; font-weight: 700;
+      font-size: 13px; text-decoration: none; color: var(--purple); border: 1px solid #dce3ec;
+    }
+    .teacher-toggle {
+      position: fixed; bottom: 90px; right: 20px; z-index: 999; background: var(--purple);
+      color: #fff; border: none; border-radius: 40px; padding: 12px 20px; font-weight: 900;
+      font-size: 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(108,63,155,.4); font-family: inherit;
+    }
+    .teacher-panel {
+      position: fixed; bottom: 150px; right: 20px; width: 380px; max-height: 60vh; overflow-y: auto;
+      background: #fff; border-radius: 24px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,.2);
+      z-index: 998; display: none; font-size: 14px; line-height: 1.5; border: 3px solid var(--purple-light);
+    }
+    .teacher-panel.open { display: block; }
+    .teacher-panel h4 { color: var(--purple); margin-bottom: 8px; }
+    .teacher-panel p { margin-bottom: 6px; padding: 4px 6px; border-radius: 6px; }
+    .teacher-panel .meta { color: var(--orange-ink); font-weight: 700; }
+    .teacher-panel .active-note { background: var(--green-light); }
+    .footer-nav {
+      height: 76px; background: white; border-top: 1px solid #e6eee1;
+      display: flex; align-items: center; justify-content: center; padding: 0 16px; flex-shrink: 0;
+    }
+    .nav-inner {
+      width: 100%; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: 0;
+      border-radius: 30px; font-weight: 900; font-size: 15px; cursor: pointer;
+      background: var(--green-light); color: var(--green-dark); font-family: inherit;
+    }
+    .nav-btn.primary { background: var(--green); color: white; }
+    .nav-btn:disabled { opacity: .4; pointer-events: none; }
+    .progress-wrap { flex: 1; max-width: 420px; }
+    .progress-track { height: 8px; border-radius: 99px; background: #e7eee5; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--violet); border-radius: inherit; transition: width .3s; width: 0; }
+    .dots { display: flex; gap: 4px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
+    .nav-dot { border: 0; padding: 0; width: 7px; height: 7px; border-radius: 50%; background: #cad7c4; cursor: pointer; }
+    .nav-dot.active { background: var(--purple); transform: scale(1.35); }
+    .counter { font-weight: 900; font-size: 18px; white-space: nowrap; min-width: 72px; text-align: center; }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 760px) {
+      .slide { padding: 16px; }
+      .slide-inner, .title-slide .slide-inner { grid-template-columns: 1fr; gap: 14px; }
+      .crystal-grid, .two-col { grid-template-columns: 1fr 1fr; }
+      .progress-wrap { display: none; }
+      .footer-nav { height: 68px; }
+    }
+  </style>
+</head>
+<body>
+<div class="presentation">
+  <main class="slide-stage">
+
+    <section class="slide title-slide active">
+      <div class="stars"></div>
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow" style="background:#F0A500;color:#12274C;">Модуль 2 · Занятие 8</span>
+          <h1>СТУДИЯ ВРЕМЕНИ</h1>
+          <h2>Управление контекстом</h2>
+          <p>🎬 Ролевой диалог с гостем из прошлого</p>
+          <p style="margin-top:10px;font-size:clamp(14px,1.5vw,18px);opacity:.9;">Рюкзак чата · карточка роли · интервью</p>
+          <div class="ref-links" style="margin-top:18px;">
+            <a href="Занятие_8.html" style="color:#c4b5fd;border-color:#6d28d9;background:#2e1065;">💻 Страница урока</a>
+            <a href="Карта.html" style="color:#c4b5fd;border-color:#6d28d9;background:#2e1065;">🗺️ Карта курса</a>
+          </div>
+        </div>
+        <div class="illustration">
+          <div class="tower-art">
+            <div class="gem">🎭</div>
+            <div class="gem">🎤</div>
+            <div class="gem">💬</div>
+            <div class="gem">🚧</div>
+            <div style="font-size:14px;opacity:.9;">Рюкзак контекста</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Мост с занятия 7</span>
+          <h2>Кристаллы уже есть</h2>
+          <p class="lead">Роль, задача, контекст, формат — формула сильного запроса. Сегодня берём один кристалл и разворачиваем его в целый разговор.</p>
+          <div class="list">
+            <span><span class="tick">7</span> Собрали формулу и три стиля</span>
+            <span><span class="tick">8</span> Держим роль на протяжении диалога</span>
+            <span><span class="tick">9</span> Дальше — картинки</span>
+          </div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🎒</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Цели урока</span>
+          <h2>Что сделаем сегодня</h2>
+          <div class="list">
+            <span><span class="tick">🎒</span> Узнаем, что ИИ «помнит» только этот чат</span>
+            <span><span class="tick">🗂️</span> Соберём карточку роли из 5 карманов</span>
+            <span><span class="tick">🎙️</span> Проведём интервью с исторической личностью</span>
+            <span><span class="tick">🔎</span> Проверим один факт своими силами</span>
+          </div>
+          <div class="note green">⏱ ≈90 минут · тренажёр на странице + эфир в ChatGPT или DeepSeek</div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🎯</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Сюжет</span>
+          <h2>Студия времени</h2>
+          <p class="lead">Роби открыл студию. ИИ — актёр. Контекст — рюкзак, который мы собираем перед эфиром.</p>
+          <div class="discuss">❓ Вопрос классу: если начать новый чат, помнит ли ИИ прошлый разговор?</div>
+          <div class="note">Пустой рюкзак — гость играет кого попало. Два героя в одном рюкзаке — роли путаются.</div>
+        </div>
+        <div class="illustration">
+          <div class="tower-art">
+            <div style="font-size:42px;">🤖</div>
+            <div style="opacity:.85;font-size:15px;text-align:center;">«Упакуйте карточку —<br>я выйду в эфир!»</div>
+            <div class="gem">🎬</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Идея</span>
+          <h2>Рюкзак чата</h2>
+          <p class="lead">Контекст — всё, что уже написано в этом разговоре.</p>
+          <div class="two-col">
+            <div class="can-card can">
+              <h3>🎒 Кладём</h3>
+              <ul>
+                <li>Кто отвечает</li>
+                <li>Кто спрашивает</li>
+                <li>Правила речи</li>
+                <li>Прошлые реплики</li>
+              </ul>
+            </div>
+            <div class="can-card cannot">
+              <h3>🚫 Не кладём</h3>
+              <ul>
+                <li>Пароль</li>
+                <li>Телефон</li>
+                <li>Тема из другого времени</li>
+                <li>Другие чаты</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="illustration"><div class="big-emoji">👂</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner full">
+        <div>
+          <span class="eyebrow">Карточка роли</span>
+          <h2>Пять карманов</h2>
+          <div class="crystal-grid">
+            <div class="crystal-card"><span class="ico">🎭</span><b>Кто</b><span>имя и эпоха</span></div>
+            <div class="crystal-card"><span class="ico">🎤</span><b>Журналист</b><span>кто спрашивает</span></div>
+            <div class="crystal-card"><span class="ico">💬</span><b>Голос</b><span>от первого лица, коротко</span></div>
+            <div class="crystal-card"><span class="ico">🚧</span><b>Границы</b><span>свой век или «не помню»</span></div>
+            <div class="crystal-card"><span class="ico">🎮</span><b>Игра</b><span>это учебный ролеплей</span></div>
+          </div>
+          <div class="note purple" style="margin-top:18px;">Хор: кто · журналист · голос · границы · игра</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Пример</span>
+          <h2>Гость: Гагарин</h2>
+          <div class="chat-bubble good">
+            <b>🎭</b> Ты — Юрий Гагарин, первый космонавт, 1961 год.<br>
+            <b>🎤</b> Я — журналист школьной газеты, мне 10–12 лет.<br>
+            <b>💬</b> Отвечай от первого лица, по 2–4 предложения.<br>
+            <b>🚧</b> Только своё время. Иначе: «Этого я не помню».<br>
+            <b>🎮</b> Это учебная игра. Сначала представься.
+          </div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🚀</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Старт</span>
+          <h2>Слабый запрос и карточка</h2>
+          <div class="chat-bubble bad">«Поговори с Гагариным».</div>
+          <div class="chat-bubble good">Карточка из пяти карманов — и только потом первый вопрос.</div>
+          <div class="discuss">⏱ 20 секунд: какой карман пропадает в короткой фразе?</div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🎬</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">В роли</span>
+          <h2>Не выдёргивай гостя</h2>
+          <div class="two-col">
+            <div class="can-card can">
+              <h3>🎭 В эпохе</h3>
+              <ul>
+                <li>Что увидел из иллюминатора?</li>
+                <li>Как назывался корабль?</li>
+                <li>Чего боялся перед полётом?</li>
+              </ul>
+            </div>
+            <div class="can-card cannot">
+              <h3>📱 Выдёргивает</h3>
+              <ul>
+                <li>Какой у тебя TikTok?</li>
+                <li>Какой iPhone лучше?</li>
+                <li>Скинь мем</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🎭</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Босс</span>
+          <h2>Смеситель контекста</h2>
+          <p class="lead">В одном чате да Винчи советует айфон, а Гагарин рисует Мону Лизу.</p>
+          <div class="steps">
+            <div class="step warn"><div class="step-num">🌫</div><div>«Будь серьёзнее» — старые реплики остаются в рюкзаке</div></div>
+            <div class="step warn"><div class="step-num">🌫</div><div>«Забудь первого» — смесь всё ещё в чате</div></div>
+            <div class="step"><div class="step-num">✅</div><div>Новый чат + одна чистая карточка</div></div>
+          </div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🌀</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Проверка</span>
+          <h2>Костюм умеет выдумывать</h2>
+          <p class="lead">Гость говорит уверенно — и всё равно может сочинить дату, имя или деталь.</p>
+          <div class="note">Это учебная игра, не настоящая встреча. Один ответ проверяем в учебнике, энциклопедии или у учителя.</div>
+          <div class="discuss">❓ Как понять, что фраза «звучит красиво», но может быть выдумкой?</div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🔎</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Инструменты</span>
+          <h2>ChatGPT и DeepSeek</h2>
+          <p class="lead">Один и тот же промпт. Новый чат у обоих.</p>
+          <div class="two-col">
+            <div class="can-card can"><h3>ChatGPT</h3><ul><li>chatgpt.com</li><li>Вставить карточку первым сообщением</li></ul></div>
+            <div class="can-card" style="background:var(--violet-light);color:#5b21b6;"><h3>DeepSeek</h3><ul><li>chat.deepseek.com</li><li>Тот же рюкзак, другой актёр</li></ul></div>
+          </div>
+          <div class="note">Личные данные в чат не пишем. Своё имя гостя — только после «да» учителя.</div>
+        </div>
+        <div class="illustration"><div class="big-emoji">💬</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Проект</span>
+          <h2>Как проходит эфир</h2>
+          <div class="steps">
+            <div class="step"><div class="step-num">1</div><div>Выбери гостя из списка на этаже 8</div></div>
+            <div class="step alt"><div class="step-num">2</div><div>Скопируй карточку роли в новый чат</div></div>
+            <div class="step warn"><div class="step-num">3</div><div>Задай 5 вопросов и вставь диалог на страницу</div></div>
+            <div class="step"><div class="step-num">4</div><div>Проверь один факт и сдай пакет</div></div>
+          </div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🎙️</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Банк вопросов</span>
+          <h2>Пять вопросов в эпохе</h2>
+          <div class="list">
+            <span><span class="tick">1</span> Как прошёл самый важный день в твоей работе?</span>
+            <span><span class="tick">2</span> Чему ты учился в детстве?</span>
+            <span><span class="tick">3</span> Какой предмет был тебе нужнее всего?</span>
+            <span><span class="tick">4</span> Что бы ты посоветовал школьнику своего времени?</span>
+            <span><span class="tick">5</span> О чём ты мечтал?</span>
+          </div>
+        </div>
+        <div class="illustration"><div class="big-emoji">❓</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">План на экране</span>
+          <h2>10 этажей студии</h2>
+          <div class="list" style="font-size:clamp(15px,1.5vw,20px);">
+            <span><span class="tick">1–2</span> Что слышит ИИ и рюкзак</span>
+            <span><span class="tick">3–5</span> Карманы, старт, ремонт промпта</span>
+            <span><span class="tick">6–7</span> Роль и босс «Смеситель»</span>
+            <span><span class="tick">8–10</span> Гость → интервью → сдача</span>
+          </div>
+          <a class="cta-link" href="Занятие_8.html">🚀 Открыть страницу урока</a>
+        </div>
+        <div class="illustration"><div class="big-emoji">🗺️</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Что сдать</span>
+          <h2>Чек-лист</h2>
+          <div class="check-list">
+            <div class="check-item"><span class="ok">✔️</span> Карточка роли (промпт)</div>
+            <div class="check-item"><span class="ok">✔️</span> Диалог: 5 вопросов и ответов</div>
+            <div class="check-item"><span class="ok">✔️</span> Один проверенный факт</div>
+            <div class="check-item"><span class="ok">✔️</span> В чате нет пароля и телефона</div>
+          </div>
+          <div class="note purple">Classroom: текст диалога или скрин нового чата</div>
+        </div>
+        <div class="illustration"><div class="big-emoji">📤</div></div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="slide-inner">
+        <div>
+          <span class="eyebrow">Рефлексия</span>
+          <h2>Микрофон Роби</h2>
+          <div class="discuss">❓ Какой карман сильнее всего удержал гостя в роли?</div>
+          <div class="discuss">❓ Выдумал ли актёр хоть одну деталь?</div>
+          <div class="note green">1–2 ответа вслух · остальные — в поле рефлексии на странице</div>
+        </div>
+        <div class="illustration"><div class="big-emoji">🎤</div></div>
+      </div>
+    </section>
+
+    <section class="slide title-slide">
+      <div class="stars"></div>
+      <div class="slide-inner full" style="text-align:center;justify-items:center;">
+        <div>
+          <span class="eyebrow" style="background:#F0A500;color:#12274C;">Финиш занятия 8</span>
+          <h1 style="margin-top:16px;">Эфир закрыт!</h1>
+          <h2>Ты держишь контекст</h2>
+          <p style="max-width:700px;margin:16px auto;">Дальше — занятие 9: промпт для картинки. Объект, стиль, окружение, свет.</p>
+          <div class="cta-link" style="background:var(--orange);box-shadow:0 4px 0 #c68400;margin-top:20px;">🎨 До встречи в мастерской картинок!</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <button class="teacher-toggle" id="teacherToggle" type="button">📘 Для учителя</button>
+  <div class="teacher-panel" id="teacherPanel">
+    <h4>Заметки педагога</h4>
+    <p class="meta">Занятие 8 · Модуль 2 · ≈90 мин. Не вводить личные данные. Своё имя героя — только после «да». Если модель выдумывает, это повод проверить факт.</p>
+    <p><b>1.</b> Титул. Страницу урока — на второй экран.</p>
+    <p><b>2.</b> Мост: формула занятия 7 остаётся, сегодня растягиваем контекст в диалог. 1 минута.</p>
+    <p><b>3.</b> Цели: итог — диалог, не регистрация аккаунта. 1 минута.</p>
+    <p><b>4.</b> Сюжет студии. Спросить, помнит ли новый чат старый. Ожидаемый ответ: нет.</p>
+    <p><b>5.</b> Рюкзак. После слайда — этажи 1–2. Пароль и телефон разбираем вслух как «не класть».</p>
+    <p><b>6.</b> Пять карманов хором. Затем этаж 3.</p>
+    <p><b>7.</b> Пример Гагарина прочитать по ролям: учитель — карман, класс — фразу.</p>
+    <p><b>8.</b> Слабый старт. 20 секунд на обсуждение, потом этаж 4–5.</p>
+    <p><b>9.</b> Вопросы «в роли / выдёргивает». Этаж 6.</p>
+    <p><b>10.</b> Босс. Подчеркнуть: «забудь» не очищает чат. Этаж 7.</p>
+    <p><b>11.</b> Галлюцинация в костюме. Связь с занятием 4. Один факт обязателен в сдаче.</p>
+    <p><b>12.</b> Инструменты. Школьный аккаунт или экран учителя. Дети не создают новые аккаунты на уроке, если это не принято в группе.</p>
+    <p><b>13.</b> Шаги эфира. Проект около 35 минут на этажах 8–9. Своё имя гостя — только с вашего согласия.</p>
+    <p><b>14.</b> Банк вопросов можно заменить своими, если они остаются в эпохе гостя.</p>
+    <p><b>15.</b> Если кто-то застрял — открыть страницу урока с этого слайда.</p>
+    <p><b>16.</b> Чек-лист Classroom: промпт, диалог, проверенный факт.</p>
+    <p><b>17.</b> Рефлексия 5 минут. Спросить, кто поймал выдумку.</p>
+    <p><b>18.</b> Анонс занятия 9: картинка = объект, стиль, окружение, свет.</p>
+  </div>
+
+  <footer class="footer-nav">
+    <nav class="nav-inner">
+      <button class="nav-btn" id="prevBtn" type="button">← Назад</button>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="dots" id="dots"></div>
+      </div>
+      <span class="counter" id="counter">1 / 18</span>
+      <button class="nav-btn primary" id="nextBtn" type="button">Вперёд →</button>
+    </nav>
+  </footer>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progressFill = document.getElementById('progressFill');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Слайд ' + (i + 1));
+    dot.addEventListener('click', () => showSlide(i));
+    dots.appendChild(dot);
+  });
+
+  function showSlide(index) {
+    current = Math.max(0, Math.min(index, slides.length - 1));
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+    document.querySelectorAll('.nav-dot').forEach((dot, i) => dot.classList.toggle('active', i === current));
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+    progressFill.style.width = ((current + 1) / slides.length * 100) + '%';
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+
+    const notes = document.querySelectorAll('#teacherPanel p');
+    notes.forEach((p, i) => p.classList.toggle('active-note', i === current + 1));
+  }
+
+  prevBtn.addEventListener('click', () => showSlide(current - 1));
+  nextBtn.addEventListener('click', () => showSlide(current + 1));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); showSlide(current + 1); }
+    if (e.key === 'ArrowLeft') showSlide(current - 1);
+    if (e.key === 'Home') showSlide(0);
+    if (e.key === 'End') showSlide(slides.length - 1);
+  });
+  showSlide(0);
+
+  const toggleBtn = document.getElementById('teacherToggle');
+  const panel = document.getElementById('teacherPanel');
+  toggleBtn.addEventListener('click', () => {
+    panel.classList.toggle('open');
+    toggleBtn.textContent = panel.classList.contains('open') ? '📕 Скрыть заметки' : '📘 Для учителя';
+  });
+</script>
+</body>
+</html>
